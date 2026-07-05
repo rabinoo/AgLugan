@@ -4,7 +4,7 @@ const router = express.Router();
 router.get('/check-session', (req, res) => {
     console.log('Session on check-session:', req.session);
 
-    if (req.session && req.session.adminId) {
+    if (req.session && (req.session.adminId || req.session.isAdmin || req.session.user_type === 'Admin')) {
         res.json({ status: 'logged_in', type: 'admin', adminId: req.session.adminId });
     } else if (req.session && req.session.user_id) {
         res.json({ status: 'logged_in', type: 'user', userId: req.session.user_id });

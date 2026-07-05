@@ -10,7 +10,7 @@ router.post('/logout', (req, res) => {
         }
 
         // Clear the session cookie
-        res.clearCookie('connect.sid', { path: '/' });
+        res.clearCookie('aglugan-session', { path: '/' });
         return res.json({ status: 'success', message: 'Logged out successfully' });
     });
 });

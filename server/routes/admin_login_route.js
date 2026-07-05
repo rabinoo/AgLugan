@@ -1,9 +1,9 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const mysql = require('../config/sql-client');
 const router = express.Router();
 
 const dbConfig = require('../config/database');
+const { authenticateCredentials, applyLoginSession } = require('../services/authService');
 
 router.post('/admin-login', async (req, res) => {
     const { username, password } = req.body;
@@ -14,30 +14,21 @@ router.post('/admin-login', async (req, res) => {
 
     try {
         const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM admin_users WHERE username = ?', [username]);
 
-        if (rows.length === 0) {
-            console.error('Username not found:', username);
-            return res.status(401).json({ status: 'error', message: 'Invalid username or password.' });
+        try {
+            const authResult = await authenticateCredentials(connection, username, password);
+
+            if (!authResult || authResult.kind !== 'admin') {
+                return res.status(401).json({ status: 'error', message: 'Invalid username or password.' });
+            }
+
+            applyLoginSession(req, authResult);
+            console.log('Session created:', req.session);
+
+            res.json({ status: 'success', message: 'Login successful', redirectUrl: authResult.redirectUrl });
+        } finally {
+            await connection.end();
         }
-
-        const admin = rows[0];
-        console.log('Admin data fetched from database:', admin);
-
-        // Compare password with hash
-        const isPasswordMatch = await bcrypt.compare(password, admin.password);
-        console.log('Password match status:', isPasswordMatch);
-
-        if (!isPasswordMatch) {
-            return res.status(401).json({ status: 'error', message: 'Invalid username or password.' });
-        }
-
-        // Set session
-        req.session.isAdmin = true;
-        req.session.adminId = admin.id;
-        console.log('Session created:', req.session);
-
-        res.json({ status: 'success', message: 'Login successful', redirectUrl: '/admindashboard' });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ status: 'error', message: 'Internal server error.' });
@@ -54,7 +45,7 @@ router.post('/admin-logout', (req, res) => {
             console.error('Error destroying session:', err);
             return res.status(500).json({ status: 'error', message: 'Failed to log out' });
         }
-        res.clearCookie('connect.sid');
+        res.clearCookie('aglugan-session');
         res.json({ status: 'success', message: 'Logged out successfully' });
     });
 });

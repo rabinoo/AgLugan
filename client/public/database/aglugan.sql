@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
 --
 
 INSERT INTO `admin_users` (`id`, `username`, `password`) VALUES
-(1, 'admin', '$2a$04$M3NnIAEnldkiWwL5g.UdHOplYUQpdYgCQuhajCXMUi97Dqdkh7Vua'),
-(3, 'admin2', '$2a$04$M3NnIAEnldkiWwL5g.UdHOplYUQpdYgCQuhajCXMUi97Dqdkh7Vua'),
-(4, 'admin3', 'admin123');
+(1, 'Admin', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm'),
+(3, 'admin2', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm'),
+(4, 'admin3', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm');
 
 -- --------------------------------------------------------
 

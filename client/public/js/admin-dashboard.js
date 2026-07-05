@@ -6,13 +6,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.status !== 'logged_in' || data.type !== 'admin') {
                 showModal('Your session has expired. Please log in again.', () => {
-                    window.location.href = '/adminlogin';
+                    window.location.href = '/login';
                 });
             }
         })
         .catch(() => {
             showModal('Error verifying session. Redirecting to login.', () => {
-                window.location.href = '/adminlogin';
+                window.location.href = '/login';
             });
         });
 
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showModal('You have been logged out.', () => {
-                window.location.href = '/adminLogin';
+                window.location.href = '/login';
             });
         });
     }
@@ -637,7 +637,7 @@ function setupLogout() {
                 .then(response => {
                     if (response.ok) {
                         showModal('You have been logged out.');
-                        window.location.href = '/adminLogin';
+                        window.location.href = '/login';
                     } else {
                         throw new Error('Failed to log out properly.');
                     }

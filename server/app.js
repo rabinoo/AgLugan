@@ -5,6 +5,7 @@ const path = require('path');
 const cors = require('cors');
 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+const ensureDefaultAdmin = require('./config/ensureDefaultAdmin');
 
 const loginRoute = require('./routes/loginRoute');
 const resetPasswordRoute = require('./routes/reset_password_route');
@@ -25,6 +26,10 @@ const adminLoginRoute = require('./routes/admin_login_route');
 const getUsersRoute = require('./routes/get_users_route');
 const adminDashboardRoute = require('./routes/admin_dashboard_route');
 const bookingRoutes = require('./routes/book_ride_route');
+
+ensureDefaultAdmin().catch((error) => {
+  console.error('Default admin bootstrap failed:', error);
+});
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -123,7 +128,7 @@ const htmlRoutes = {
   '/resetPassword': 'reset_password.html',
   '/passengerDashboard': 'passenger-dashboard.html',
   '/driverStats': 'driver-statistics.html',
-  '/adminlogin': 'admin-login.html',
+  '/adminlogin': 'login.html',
   '/admindashboard': 'admin-dashboard.html',
 };
 

@@ -47,17 +47,16 @@ Important Notes
 - The app can no longer rely on `localhost` database credentials in production.
 - Neon is PostgreSQL, so the old MySQL dump in `client/public/database/aglugan.sql` is not directly importable without conversion.
 - Use `client/public/database/aglugan.postgres.sql` in the Neon SQL editor or with your preferred PostgreSQL client.
-- One seeded admin row in the original dump stores `admin123` as plain text, which will not work with the current bcrypt-based login flow.
 - Profile image uploads are not persisted on Vercel without external object storage such as Cloudinary, S3, or Vercel Blob.
 - Login and reset-password requests now use the current site origin, so they work in both local development and production.
 
 Admin Access
 
-- Admin page: `/adminlogin`
-- Example admin credentials depend on your database contents.
+- Shared login page: `/login`
+- The legacy `/adminlogin` URL now opens the same shared login page.
+- Default admin credentials: `Admin` / `Admin123`
 
 Driver and Passenger Notes
 
 - Passengers must exist in the allowed ID list before registration.
 - Drivers need a vehicle before they can queue rides.
-

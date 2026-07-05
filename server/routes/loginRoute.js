@@ -1,10 +1,10 @@
 const express = require('express');
 const mysql = require('../config/sql-client');
-const bcrypt = require('bcrypt');
 const path = require('path');
 const router = express.Router();
 
 const dbConfig = require('../config/database');
+const { authenticateCredentials, applyLoginSession } = require('../services/authService');
 
 // Serve the login page
 router.get('/login', (req, res) => {
@@ -28,46 +28,25 @@ router.post('/login', async (req, res) => {
         const connection = await mysql.createConnection(dbConfig);
 
         try {
-            console.log('Querying database for username:', username);
+            console.log('Querying login credentials for username:', username);
 
-            const [rows] = await connection.execute(
-                'SELECT * FROM users WHERE username = ?',
-                [username]
-            );
+            const authResult = await authenticateCredentials(connection, username, password);
 
-            console.log('Database response:', rows);
-
-            if (rows.length === 0) {
+            if (!authResult) {
                 return res.status(401).json({
                     status: 'error',
                     message: 'Invalid username or password'
                 });
             }
 
-            const user = rows[0];
+            applyLoginSession(req, authResult);
 
-            // Compare with password_hash instead of password
-            const passwordMatch = await bcrypt.compare(password, user.password_hash);
-            console.log('Password match result:', passwordMatch);
+            console.log('Login successful, session:', req.session);
 
-            if (passwordMatch) {
-                // Set session
-                req.session.user_id = user.user_id;
-                req.session.username = user.username;
-                req.session.user_type = user.user_type;
-
-                console.log('Login successful, session:', req.session);
-
-                return res.json({
-                    status: 'success',
-                    message: 'Login successful',
-                    redirectUrl: user.user_type === 'Driver' ? '/driverDashboard' : '/passengerDashboard'
-                });
-            }
-
-            return res.status(401).json({
-                status: 'error',
-                message: 'Invalid username or password'
+            return res.json({
+                status: 'success',
+                message: 'Login successful',
+                redirectUrl: authResult.redirectUrl
             });
 
         } finally {

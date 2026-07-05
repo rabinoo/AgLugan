@@ -125,9 +125,9 @@ FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
 INSERT INTO admin_users (id, username, password) VALUES
-  (1, 'admin', '$2a$04$M3NnIAEnldkiWwL5g.UdHOplYUQpdYgCQuhajCXMUi97Dqdkh7Vua'),
-  (3, 'admin2', '$2a$04$M3NnIAEnldkiWwL5g.UdHOplYUQpdYgCQuhajCXMUi97Dqdkh7Vua'),
-  (4, 'admin3', 'admin123');
+  (1, 'Admin', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm'),
+  (3, 'admin2', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm'),
+  (4, 'admin3', '$2b$10$JWVshbB0QiOFssRbxIO7qewhPE/KH4FngfAs5SQugFfK6WVPm9VJm');
 
 INSERT INTO bookings (booking_id, ride_id, booking_status, created_at) VALUES
   (1, 10077, 'BOOKED', '2024-12-18 17:54:33'),
