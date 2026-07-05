@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     const togglePassword = document.getElementById('togglePassword');
     const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    const BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000`;
+    const BASE_URL = window.location.origin;
 
     // Get token from URL
     const urlParams = new URLSearchParams(window.location.search);

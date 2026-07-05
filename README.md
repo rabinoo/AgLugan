@@ -1,50 +1,63 @@
-﻿FINALS PROJECT - RIDE HAILING WEBAPP
-- WEBAPP NAME - AgLugan
-- MEMBERS - AZURIN, BUCANG, GALAPON, MARRON, RABINO, VILLANUEVA, WANGET
+AgLugan
 
-SETUP FOR THE PROJECT
+Ride-hailing web application with a static client and an Express backend.
 
-TO ACCESS THE WEBSITE
-1. Check your IP address in your desktop
-2. Copy your IP Address and put your IP address in Line 48 in server.js
-    eg.     origin: ['http://localhost:3000', 'http://192.168.0.119:3000', 'http://192.168.1.2:3000', 'http://192.168.100.41:3000', 'http://192.168.2.7:3000', 'YOUR IP ADDRESS' ],
-3. Turn on your WAMP Server and install SQLTools MySQL/MariaDB/TiDB for faster update
-4. Add the database to the phpmyadmin, make sure the database name is "aglugan"
-4. Go to your terminal in VS code 
-5. Type in the terminal "cd server"
-6. and type "node server.js"
-7. This must be the output in your terminal
-        PS C:\wamp64\www\webtek final\AgLugan\server> node server.js
-        Environment variables loaded: { EMAIL_USER: 'izanamikuro02@gmail.com', EMAIL_PASS: '***exists***' }
-        Loading forgot password route...
-        Server is running on port 3000
+Local Development
 
-        Available network access points:
-        - Ethernet: http://192.168.1.2:3000
-        - Ethernet 7: http://192.168.56.1:3000
-        - VMware Network Adapter VMnet1: http://192.168.177.1:3000
-        - VMware Network Adapter VMnet8: http://192.168.220.1:3000
-8. Click on the Ethernet IP Address and the website will run
+1. Install dependencies:
+   npm install
+2. Set the required environment variables in `server/.env`.
+3. Use a PostgreSQL database, preferably Neon, and import `client/public/database/aglugan.postgres.sql`.
+4. Start the app:
+   npm run dev
+5. Open:
+   http://localhost:3000
 
-FOR ADMIN
-1. To access the admin side you must type /adminlogin to hide from vulnerabilities
-    eg. http://192.168.1.2:3000/adminlogin
-2. To access the admin
-    username: admin
-    password: admin123
-3. To register, users must be enrolled as students or employed as faculty/staff at SLU. The admin adds the user's ID number, which is checked against the id_numbers table for verification. Only users with valid ID numbers in the table can proceed with registration.
+Required Environment Variables
 
-FOR PASSENGER MODULE
-1. Make sure if you want to register Go to admin and add a ID Number FIRST.
-2. After logging in you can access the passenger dashboard.
- NOTE: If there are no available rides the driver module must put a queue rides inorder the Student/Faculty book a ride.
+Set these locally in `server/.env` and in Vercel Project Settings -> Environment Variables:
 
-FOR DRIVER MODULE
-1. An admin will create a account for the driver
-2. After admin creating the driver credentials try logging in
-    here is a driver credentials to our database
-        username: martin
-        password: martin123
-NOTE: The driver must add first a vehicle before queue a ride
+- `DATABASE_URL` or `NEON_DATABASE_URL`
+- `SESSION_SECRET`
+- `EMAIL_USER`
+- `EMAIL_PASS`
+- `CORS_ORIGINS` (optional, comma-separated list)
+- `DB_SSL` (optional, defaults to enabled when `DATABASE_URL` is used)
+- `DB_SSL_REJECT_UNAUTHORIZED` (optional)
 
+Deploying to Vercel
+
+This project now supports Vercel through:
+
+- `api/index.js` as the serverless entrypoint
+- `vercel.json` rewrites so Express handles both pages and API routes
+- PostgreSQL/Neon database configuration through `DATABASE_URL`
+- cookie-based sessions that work better in a serverless environment
+
+Deployment steps:
+
+1. Push the repository to GitHub.
+2. Import the project into Vercel.
+3. Add all environment variables listed above.
+4. Set `DATABASE_URL` in Vercel to your Neon connection string.
+5. Deploy.
+
+Important Notes
+
+- The app can no longer rely on `localhost` database credentials in production.
+- Neon is PostgreSQL, so the old MySQL dump in `client/public/database/aglugan.sql` is not directly importable without conversion.
+- Use `client/public/database/aglugan.postgres.sql` in the Neon SQL editor or with your preferred PostgreSQL client.
+- One seeded admin row in the original dump stores `admin123` as plain text, which will not work with the current bcrypt-based login flow.
+- Profile image uploads are not persisted on Vercel without external object storage such as Cloudinary, S3, or Vercel Blob.
+- Login and reset-password requests now use the current site origin, so they work in both local development and production.
+
+Admin Access
+
+- Admin page: `/adminlogin`
+- Example admin credentials depend on your database contents.
+
+Driver and Passenger Notes
+
+- Passengers must exist in the allowed ID list before registration.
+- Drivers need a vehicle before they can queue rides.
 

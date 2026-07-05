@@ -1,14 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2');
+const mysql = require('../config/sql-client');
 
 // Database configuration
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan'
-};
+const dbConfig = require('../config/database');
 
 const db = mysql.createPool(dbConfig);
 

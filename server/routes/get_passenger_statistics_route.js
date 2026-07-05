@@ -1,14 +1,22 @@
 const express = require('express');
-const db = require('../../public/database/db'); // Database connection
+const db = require('../config/db');
 const router = express.Router();
 
 router.get('/passenger-statistics', async (req, res) => {
     try {
         // Fetch data from the passenger_statistics table
-        const [rows] = await db.promise().query(
+        const [rows] = await db.query(
             `SELECT day_of_week, time_slot, bookings_count
              FROM passenger_statistics
-             ORDER BY FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'), time_slot`
+             ORDER BY CASE day_of_week
+                 WHEN 'Monday' THEN 1
+                 WHEN 'Tuesday' THEN 2
+                 WHEN 'Wednesday' THEN 3
+                 WHEN 'Thursday' THEN 4
+                 WHEN 'Friday' THEN 5
+                 WHEN 'Saturday' THEN 6
+                 ELSE 7
+             END, time_slot`
         );
 
         // Return the data as JSON

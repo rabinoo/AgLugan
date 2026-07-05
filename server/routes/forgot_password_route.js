@@ -1,27 +1,13 @@
 const express = require('express');
 const crypto = require('crypto');
-const mysql = require('mysql2');
+const mysql = require('../config/sql-client');
 const nodemailer = require('nodemailer');
 const router = express.Router();
+const dbConfig = require('../config/database');
 
 console.log('Loading forgot password route...');
 
-// Direct database configuration
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan'
-});
-
-// Test database connection
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed:', err);
-    } else {
-        console.log('Database connected successfully');
-    }
-});
+const db = mysql.createPool(dbConfig);
 
 // Test route
 router.get('/forgot-password-test', (req, res) => {
@@ -60,16 +46,23 @@ router.post('/forgot-password', async (req, res) => {
         const token = crypto.randomBytes(50).toString('hex');
         const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
 
-        // Store the token in the database
-        const [result] = await db.promise().query(
-            `INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)
-             ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)`,
+        // Replace any previous reset token for this user before inserting a new one.
+        await db.promise().query('DELETE FROM password_resets WHERE user_id = ?', [userId]);
+        await db.promise().query(
+            'INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)',
             [userId, token, expires]
         );
 
         // Email credentials with fallback
-        const emailUser = process.env.EMAIL_USER || 'izanamikuro02@gmail.com';
-        const emailPass = process.env.EMAIL_PASS || 'pjsi wiew ejfh rvbn';
+        const emailUser = process.env.EMAIL_USER;
+        const emailPass = process.env.EMAIL_PASS;
+
+        if (!emailUser || !emailPass) {
+            return res.status(500).json({
+                status: 'error',
+                message: 'Email configuration is missing on the server.'
+            });
+        }
 
         console.log('Using email credentials:', {
             user: emailUser,

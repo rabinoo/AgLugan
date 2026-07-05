@@ -2,19 +2,16 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const mysql = require('mysql2/promise');
+const mysql = require('../config/sql-client');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-};
+const dbConfig = require('../config/database');
 
-// Configure storage for multer
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL === 'true';
+
+// Configure storage for local development only. Vercel needs external object storage.
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '..', 'public', 'uploads', 'profile_pictures');
@@ -35,8 +32,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Initialize multer
-const upload = multer({ storage });
+const upload = multer({
+  storage: isVercel ? multer.memoryStorage() : storage,
+});
 
 // Profile Update Endpoint
 router.post('/update-profile', auth, upload.single('profile_picture'), async (req, res) => {
@@ -48,6 +46,14 @@ router.post('/update-profile', auth, upload.single('profile_picture'), async (re
     }
 
     const { name, email } = req.body;
+
+    if (req.file && isVercel) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Profile image uploads need external storage when deployed on Vercel.',
+        });
+    }
+
     const profilePicture = req.file ? `/uploads/profile_pictures/${req.file.filename}` : null;
 
     try {

@@ -1,14 +1,9 @@
 const express = require('express');
-const mysql = require('mysql2/promise'); // Using mysql2 for database connection
+const mysql = require('../config/sql-client'); // Using mysql2 for database connection
 const router = express.Router();
 
 // Database configuration
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-};
+const dbConfig = require('../config/database');
 
 // Route to update ride status
 router.post('/update-ride-status', async (req, res) => {

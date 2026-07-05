@@ -1,11 +1,6 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-};
+const mysql = require('../config/sql-client');
+const dbConfig = require('../config/database');
 
 const router = express.Router();
 

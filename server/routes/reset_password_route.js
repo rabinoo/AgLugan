@@ -2,15 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2');
+const mysql = require('../config/sql-client');
+const dbConfig = require('../config/database');
 
-// Database configuration
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan'
-});
+const db = mysql.createPool(dbConfig);
 
 // Verify token and get user
 router.get('/verify-reset-token/:token', async (req, res) => {

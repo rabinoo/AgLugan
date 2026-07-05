@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModal = document.getElementsByClassName('close')[0];
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     const togglePasswordIcon = document.querySelector('#togglePassword');
-    const BASE_URL = `${window.location.protocol}//${window.location.hostname}:3000`;
+    const BASE_URL = window.location.origin;
 
     loginForm?.addEventListener('submit', async function (e) {
         e.preventDefault();

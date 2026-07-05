@@ -1,13 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
+const mysql = require('../config/sql-client');
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-};
+const dbConfig = require('../config/database');
 
 const router = express.Router();
 

@@ -1,15 +1,10 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const mysql = require('../config/sql-client');
 const bcrypt = require('bcrypt');
 const path = require('path');
 const router = express.Router();
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan'
-};
+const dbConfig = require('../config/database');
 
 // Serve the login page
 router.get('/login', (req, res) => {

@@ -1,7 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../../client/public/database/db'); // Ensure you have a database connection setup in `db.js`
+const db = require('../config/db');
 const auth = require('../middleware/auth');
+
+function formatTimeRangeStart(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
 
 // Get Driver Dashboard Data
 router.get('/driver-dashboard', async (req, res) => {
@@ -200,15 +209,15 @@ router.post('/driver-dashboard/queue', async (req, res) => {
                 const oneHourAfter = new Date(localEndTime.getTime() + 60 * 60 * 1000);
             
                 // Check for conflicts in the 1-hour window
+                const conflictStart = formatTimeRangeStart(oneHourBefore);
+                const conflictEnd = formatTimeRangeStart(oneHourAfter);
+
                 const [conflict] = await db.query(
                     `SELECT * FROM rides 
                      WHERE driver_id = ? 
                      AND status IN ('Scheduled', 'In Queue') 
-                     AND (
-                         (time_range BETWEEN ? AND ?) OR
-                         (time_range BETWEEN ? AND ?)
-                     )`,
-                    [driver_id, oneHourBefore, oneHourAfter, oneHourBefore, oneHourAfter]
+                     AND substring(time_range, 1, 16) BETWEEN ? AND ?`,
+                    [driver_id, conflictStart, conflictEnd]
                 );
             
                 if (conflict.length > 0) {

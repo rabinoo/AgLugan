@@ -1,13 +1,8 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
+const mysql = require('../config/sql-client');
 const router = express.Router();
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-}; 
+const dbConfig = require('../config/database'); 
 
 // Fetch rides
 router.get('/rides', async (req, res) => {
@@ -52,12 +47,12 @@ router.get('/rides', async (req, res) => {
         // Add search functionality to search across specific fields, including ride_id
         if (search) {
             sql += ` AND (
-                rides.ride_id LIKE ? OR 
+                CAST(rides.ride_id AS TEXT) LIKE ? OR 
                 rides.start_location LIKE ? OR 
                 rides.end_location LIKE ? OR 
                 rides.status LIKE ? OR 
-                rides.fare LIKE ? OR 
-                rides.waiting_time LIKE ? OR 
+                CAST(rides.fare AS TEXT) LIKE ? OR 
+                CAST(rides.waiting_time AS TEXT) LIKE ? OR 
                 rides.time_range LIKE ? OR 
                 rides.plate_number LIKE ?
             )`;

@@ -1,18 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const mysql = require('mysql2/promise');
+const mysql = require('../config/sql-client');
 const router = express.Router();
 const { isAdminLoggedIn } = require('../middleware/adminMiddleware');
 
 // Apply middleware
 router.use(isAdminLoggedIn);
 
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aglugan',
-};
+const dbConfig = require('../config/database');
 
 // Helper function for time comparison
 function isTimeInRange(currentTime, startTime, endTime) {
@@ -59,12 +54,12 @@ router.get('/rides', async (req, res) => {
         `;
 
         const params = searchQuery
-            ? [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]
+            ? [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]
             : [];
 
         if (searchQuery) {
             query += ` AND (
-                r.ride_id LIKE ? OR
+                CAST(r.ride_id AS TEXT) LIKE ? OR
                 r.start_location LIKE ? OR
                 r.end_location LIKE ? OR
                 r.status LIKE ? OR
